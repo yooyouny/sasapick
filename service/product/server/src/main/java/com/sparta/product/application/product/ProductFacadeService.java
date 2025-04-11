@@ -27,7 +27,7 @@ public class ProductFacadeService {
   private final S3ImageService imageService;
 
   @Transactional
-  public String createProduct(
+  public Long createProduct(
       ProductCreateRequest request, MultipartFile productImg, MultipartFile detailImg)
       throws IOException {
     validateCategoryId(request.categoryId());
@@ -54,14 +54,14 @@ public class ProductFacadeService {
   }
 
   @Transactional
-  public ProductResponse updateStatus(UUID productId, boolean status) {
+  public ProductResponse updateStatus(Long productId, boolean status) {
     ProductResponse product = productService.updateStatus(productId, status);
     elasticSearchService.updateProduct(product);
     return product;
   }
 
   @Transactional
-  public boolean deleteProduct(UUID productId) {
+  public boolean deleteProduct(Long productId) {
     ProductResponse product = productService.deleteProduct(productId);
     elasticSearchService.deleteProduct(product);
     Optional.ofNullable(product.getOriginImgUrl()).ifPresent(imageService::deleteImage);

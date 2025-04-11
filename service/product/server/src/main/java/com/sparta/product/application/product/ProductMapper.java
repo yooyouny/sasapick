@@ -15,8 +15,7 @@ public class ProductMapper {
         .originalPrice(product.getOriginalPrice())
         .discountPercent(product.getDiscountPercent())
         .discountedPrice(product.getDiscountedPrice())
-        .stock(product.getStock())
-        .tags(product.getTags())
+        .tags(product.getTagNames())
         .build();
   }
 
@@ -33,7 +32,6 @@ public class ProductMapper {
         .originImgUrl(imgDto.originImgUrl())
         .detailImgUrl(imgDto.detailImgUrl())
         .thumbnailImgUrl(imgDto.thumbnailImgUrl())
-        .stock(request.stock())
         .limitCountPerUser(request.limitCountPerUser())
         .tags(request.tags())
         .build();
@@ -49,7 +47,6 @@ public class ProductMapper {
         request.size(),
         request.originalPrice(),
         request.discountPercent(),
-        request.stock(),
         request.description(),
         imgUrls.originImgUrl(),
         imgUrls.detailImgUrl(),

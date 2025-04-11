@@ -11,7 +11,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -41,7 +40,7 @@ public class ProductController {
   @PostMapping(
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public ApiResponse<String> createProduct(
+  public ApiResponse<Long> createProduct(
       @RequestPart("request") @Valid ProductCreateRequest request,
       @RequestPart("productImg") MultipartFile productImg,
       @RequestPart("detailImg") MultipartFile detailImg)
@@ -64,19 +63,19 @@ public class ProductController {
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
   @PatchMapping("/{productId}")
   public ApiResponse<ProductResponse> updateStatus(
-      @PathVariable("productId") @NotNull UUID productId, @RequestParam("soldout") boolean status) {
+      @PathVariable("productId") @NotNull Long productId, @RequestParam("soldout") boolean status) {
     return ApiResponse.ok(facadeService.updateStatus(productId, status));
   }
 
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
   @DeleteMapping("/{productId}")
-  public ApiResponse<Boolean> deleteProduct(@PathVariable("productId") @NotNull UUID productId) {
+  public ApiResponse<Boolean> deleteProduct(@PathVariable("productId") @NotNull Long productId) {
     return ApiResponse.ok(facadeService.deleteProduct(productId));
   }
 
   @GetMapping("/search/{productId}")
   public ApiResponse<ProductResponse> getProduct(
-      @PathVariable("productId") @NotNull UUID productId) {
+      @PathVariable("productId") @NotNull Long productId) {
     return ApiResponse.ok(productService.getProduct(productId));
   }
 

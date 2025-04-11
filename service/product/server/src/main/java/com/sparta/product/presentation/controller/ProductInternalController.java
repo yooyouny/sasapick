@@ -23,7 +23,7 @@ public class ProductInternalController {
 
   @GetMapping
   public List<ProductDto> getProductList(
-      @RequestParam(name = "productIds") List<String> productIds) {
+      @RequestParam(name = "productIds") List<Long> productIds) {
     return productService.getProductList(productIds);
   }
 
@@ -33,7 +33,7 @@ public class ProductInternalController {
   }
 
   @PostMapping("/rollback-stock")
-  public void rollbackStock(@RequestBody Map<String, Integer> productQuantities) {
+  public void rollbackStock(@RequestBody Map<Long, Integer> productQuantities) {
     productLockService.rollbackStock(productQuantities);
   }
 
