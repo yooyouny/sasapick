@@ -1,4 +1,4 @@
-package com.sparta.product.domain.repository.redis;
+package com.sparta.product.domain.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

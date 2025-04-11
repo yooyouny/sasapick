@@ -2,7 +2,7 @@ package com.sparta.product.application.preorder;
 
 import static com.sparta.product.infrastructure.utils.RedisUtils.getRedisKeyOfPreOrder;
 
-import com.sparta.product.domain.repository.redis.RedisRepository;
+import com.sparta.product.domain.repository.RedisRepository;
 import com.sparta.product.infrastructure.utils.PreOrderRedisDto;
 import com.sparta.product.presentation.exception.ProductErrorCode;
 import com.sparta.product.presentation.exception.ProductServerException;
