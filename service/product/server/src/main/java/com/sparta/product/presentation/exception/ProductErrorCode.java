@@ -13,15 +13,16 @@ public enum ProductErrorCode {
 
   PREORDER_QUANTITY_CONFLICT(HttpStatus.CONFLICT, "예약가능수량이 재고량보다 많습니다"),
   NOT_OPEN_FOR_PREORDER(HttpStatus.CONFLICT, "오픈된 사전예약건이 아닙니다"),
-
   INVALID_PREORDER_DATETIME(HttpStatus.FORBIDDEN, "예약가능한 시간이 아닙니다"),
   ALREADY_PREORDER(HttpStatus.CONFLICT, "이미 해당 사전예약 주문이 완료되었습니다"),
   EXCEED_PREORDER_QUANTITY(HttpStatus.CONFLICT, "사전예약가능 수량을 초과하였습니다"),
 
   INVALID_PERMISSION(HttpStatus.FORBIDDEN, "요청 권한이 없습니다"),
+  ILLEGAL_ARGUMENT(HttpStatus.BAD_REQUEST, "입력값의 형식이 올바르지 않습니다"),
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "내부 서버 오류입니다"),
 
-  STOCK_NOT_AVAILABLE(HttpStatus.CONFLICT, "재고가 부족합니다.");
+  STOCK_NOT_AVAILABLE(HttpStatus.CONFLICT, "재고가 부족합니다."),
+  DUPLICATE_STOCK_KEY(HttpStatus.CONFLICT, "이미 같은 키로 재고정보가 존재합니다");
 
   private final HttpStatus status;
   private final String message;
