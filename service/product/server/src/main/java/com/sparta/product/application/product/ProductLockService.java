@@ -1,6 +1,7 @@
 package com.sparta.product.application.product;
 
 import com.sparta.product.application.preorder.DistributedLockComponent;
+import com.sparta.product.application.stock.StockRedisService;
 import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductLockService {
 
   private final DistributedLockComponent lockComponent;
-  private final ProductService productService;
+  private final StockRedisService redisService;
 
   @Transactional
-  public void reduceStock(Map<String, Integer> productQuantities) {
+  public void reduceStock(Map<Long, Integer> productQuantities) {
 
-    Set<String> productIds = productQuantities.keySet();
+    Set<Long> productIds = productQuantities.keySet();
     lockComponent.executeForMultipleProducts(
         productIds.stream().map("stockLock_%s"::formatted).toList(),
         3000, // 락 대기 시간
@@ -27,13 +28,13 @@ public class ProductLockService {
         3, // 재시도 횟수
         3000, // 재시도 대기 시간
         () -> {
-          productService.reduceStock(productQuantities);
+          redisService.decreaseStock(productQuantities);
         });
   }
 
   @Transactional
-  public void rollbackStock(Map<String, Integer> productQuantities) {
-    Set<String> productIds = productQuantities.keySet();
+  public void rollbackStock(Map<Long, Integer> productQuantities) {
+    Set<Long> productIds = productQuantities.keySet();
     lockComponent.executeForMultipleProducts(
         productIds.stream().map("stockLock_%s"::formatted).toList(),
         3000, // 락 대기 시간
@@ -41,8 +42,7 @@ public class ProductLockService {
         3, // 재시도 횟수
         3000, // 재시도 대기 시간
         () -> {
-          productService.rollbackStock(productQuantities);
+          redisService.increaseStock(productQuantities);
         });
   }
-
 }
