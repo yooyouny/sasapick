@@ -1,9 +1,10 @@
 package com.sparta.product.application.product;
 
 import com.sparta.product.application.dto.ImgDto;
+import com.sparta.product.application.stock.StockRedisService;
 import com.sparta.product.domain.model.Product;
 import com.sparta.product.domain.model.SortOption;
-import com.sparta.product.domain.repository.cassandra.ProductRepository;
+import com.sparta.product.domain.repository.ProductRepository;
 import com.sparta.product.presentation.exception.ProductErrorCode;
 import com.sparta.product.presentation.exception.ProductServerException;
 import com.sparta.product.presentation.request.ProductCreateRequest;
@@ -12,8 +13,6 @@ import com.sparta.product.presentation.response.ProductResponse;
 import com.sparta.product_dto.ProductDto;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j(topic = "ProductService")
 public class ProductService {
-
   private final ProductRepository productRepository;
 
   @Transactional
@@ -50,7 +48,7 @@ public class ProductService {
   }
 
   @Transactional
-  public ProductResponse updateStatus(UUID productId, boolean status) {
+  public ProductResponse updateStatus(Long productId, boolean status) {
     Product product = getSavedProduct(productId);
     product.setSoldout(status);
     productRepository.save(product);
@@ -58,43 +56,14 @@ public class ProductService {
   }
 
   @Transactional
-  public ProductResponse deleteProduct(UUID productId) {
+  public ProductResponse deleteProduct(Long productId) {
     Product product = getSavedProduct(productId);
     product.isDelete();
     productRepository.save(product);
     return ProductResponse.fromEntity(product);
   }
 
-  @Transactional
-  public void reduceStock(Map<String, Integer> productQuantities) {
-    log.info(productQuantities.toString());
-    productQuantities.entrySet().stream()
-        .forEach(
-            entry -> {
-              log.info(entry.getKey(), entry.getValue());
-              String productId = entry.getKey();
-              int reduceCount = entry.getValue();
-              Product product = getSavedProduct(UUID.fromString(productId));
-              validateProductStock(product, reduceCount);
-              product.updateStock(reduceCount);
-              productRepository.save(product);
-            });
-  }
-
-  @Transactional
-  public void rollbackStock(Map<String, Integer> productQuantities) {
-    productQuantities.entrySet().stream()
-        .forEach(
-            entry -> {
-              String productId = entry.getKey();
-              int rollbackCount = entry.getValue();
-              Product product = getSavedProduct(UUID.fromString(productId));
-              product.rollbackStock(rollbackCount);
-              productRepository.save(product);
-            });
-  }
-
-  public ProductResponse getProduct(UUID productId) {
+  public ProductResponse getProduct(Long productId) {
     return ProductResponse.fromEntity(getSavedProduct(productId));
   }
 
@@ -128,22 +97,16 @@ public class ProductService {
     return new PageImpl<>(result, pageable, result.size());
   }
 
-  public List<ProductDto> getProductList(List<String> productIds) {
+  public List<ProductDto> getProductList(List<Long> productIds) {
     return productIds.stream()
-        .map(productId -> getSavedProduct(UUID.fromString(productId)))
+        .map(this::getSavedProduct)
         .map(ProductMapper::fromEntity)
         .collect(Collectors.toList());
   }
 
-  public Product getSavedProduct(UUID productId) {
+  public Product getSavedProduct(Long productId) {
     return productRepository
         .findByProductIdAndIsDeletedFalse(productId)
         .orElseThrow(() -> new ProductServerException(ProductErrorCode.NOT_FOUND_PRODUCT));
-  }
-
-  private void validateProductStock(Product product, int reduceCount) {
-    if (product.getStock() < reduceCount) {
-      throw new ProductServerException(ProductErrorCode.STOCK_NOT_AVAILABLE);
-    }
   }
 }

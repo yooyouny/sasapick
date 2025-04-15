@@ -49,7 +49,7 @@ public class PreOrderController {
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")
   @PostMapping
   public ApiResponse<Long> createPreOrder(@RequestBody @Valid PreOrderCreateRequest request) {
-    return ApiResponse.created(preOrderService.createPreOrder(request));
+    return ApiResponse.created(preOrderFacadeService.createPreOrder(request));
   }
 
   @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MANAGER')")

@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public record PreOrderUpdateRequest(
     @NotNull(message = "사전예약상품아이디는 필수입니다") Long preOrderId,
-    @NotNull(message = "상품아이디는 필수입니다") UUID productId,
+    @NotNull(message = "상품아이디는 필수입니다") Long productId,
     @NotBlank(message = "사전예약주문타이틀은 필수입니다") String preOrderTitle,
     @NotNull(message = "사전예약시작일자는 필수입니다") LocalDateTime startDateTime,
     @NotNull(message = "사전예약종료일자는 필수입니다") LocalDateTime endDateTime,
