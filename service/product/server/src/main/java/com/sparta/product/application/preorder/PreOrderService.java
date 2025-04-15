@@ -1,16 +1,17 @@
 package com.sparta.product.application.preorder;
 
+import com.sparta.product.application.dto.StockDto;
 import com.sparta.product.domain.model.PreOrder;
 import com.sparta.product.domain.model.PreOrderState;
 import com.sparta.product.domain.model.Product;
-import com.sparta.product.domain.repository.cassandra.ProductRepository;
-import com.sparta.product.domain.repository.jpa.PreOrderRepository;
+import com.sparta.product.domain.repository.PreOrderRepository;
+import com.sparta.product.domain.repository.ProductRepository;
+import com.sparta.product.domain.repository.StockRepository;
 import com.sparta.product.presentation.exception.ProductErrorCode;
 import com.sparta.product.presentation.exception.ProductServerException;
 import com.sparta.product.presentation.request.PreOrderCreateRequest;
 import com.sparta.product.presentation.request.PreOrderUpdateRequest;
 import com.sparta.product.presentation.response.PreOrderResponse;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -23,15 +24,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class PreOrderService {
   private final PreOrderRepository preOrderRepository;
   private final ProductRepository productRepository;
+  private final StockRepository stockRepository;
 
   public Long createPreOrder(PreOrderCreateRequest request) {
-    Product product = getProductByProductId(request.productId());
-    validateStock(product.getStock(), request.availableQuantity());
     PreOrder preOrder = PreOrderMapper.toEntity(request);
     PreOrder savedPreOrder = preOrderRepository.save(preOrder);
     return savedPreOrder.getPreOrderId();
@@ -40,9 +39,9 @@ public class PreOrderService {
   @CacheEvict(cacheNames = "preOrder", key = "#request.preOrderId()")
   public PreOrderResponse updatePreOrder(PreOrderUpdateRequest request) {
     PreOrder preOrder = findPreOrderByPreOrderId(request.preOrderId());
-    if (preOrder.getProductId() != request.productId()) {
-      Product product = getProductByProductId(request.productId());
-      validateStock(product.getStock(), request.availableQuantity());
+    if (preOrder.getPreOrderId() != request.productId()) {
+      Integer quantity = stockRepository.getStock(request.productId());
+      validateStock(quantity, request.availableQuantity());
     }
     preOrder.update(
         request.productId(),
@@ -89,11 +88,5 @@ public class PreOrderService {
   private void validateStock(int nowQuantity, int requestStock) {
     if (nowQuantity <= requestStock)
       throw new ProductServerException(ProductErrorCode.PREORDER_QUANTITY_CONFLICT);
-  }
-
-  private Product getProductByProductId(UUID productId) {
-    return productRepository
-        .findByProductIdAndIsDeletedFalse(productId)
-        .orElseThrow(() -> new ProductServerException(ProductErrorCode.NOT_FOUND_PRODUCT));
   }
 }
