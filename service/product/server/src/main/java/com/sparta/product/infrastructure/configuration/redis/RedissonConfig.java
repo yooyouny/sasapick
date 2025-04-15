@@ -1,4 +1,4 @@
-package com.sparta.product.infrastructure.configuration;
+package com.sparta.product.infrastructure.configuration.redis;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

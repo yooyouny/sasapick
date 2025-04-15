@@ -1,4 +1,4 @@
-package com.sparta.product.infrastructure.configuration;
+package com.sparta.product.infrastructure.configuration.redis;
 
 import java.time.Duration;
 import org.springframework.cache.annotation.EnableCaching;
