@@ -26,7 +26,7 @@ public class ProductFacadeService {
   private final CategoryService categoryService;
   private final StockProducer stockProducer;
   private final ElasticsearchService elasticSearchService;
-  private final S3ImageService imageService;
+  private final ImageService imageService;
 
   @Transactional
   public Long createProduct(

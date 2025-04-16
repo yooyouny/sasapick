@@ -5,13 +5,6 @@ spring:
     username: ${MYSQL_USERNAME}
     password: ${MYSQL_PASSWORD}
 
-  cassandra:
-    contact-points: 127.0.0.1
-    port: 9042
-    keyspace-name: product
-    schema-action: create_if_not_exists
-    local-datacenter: datacenter01
-
   jpa:
     database: MYSQL
     hibernate:
@@ -24,9 +17,9 @@ spring:
       host: localhost
       port: 9200
       uris: http://localhost:9200
-    fingerprint: 2B:EA:5D:9B:EB:E8:B0:D9:70:42:CE:CC:5E:53:24:EE:60:AC:91:CB:9C:D1:C8:B1:9F:75:19:9E:A4:23:D5:DD
+    fingerprint: ${ELASTIC_FINGERPRINT}
     account: elastic
-    password: elastic-password
+    password: ${ELASTIC_PASSWORD}
 
   data:
     preorder-redis:
@@ -59,9 +52,9 @@ product:
 
 aws:
   credentials:
-    access-key: ${AWS_S3_ACCESS_KEY}
-    secret-key: ${AWS_S3_SECRET_KEY}
-    region: ${AWS_S3_REGION}
+    access-key: dummy
+    secret-key: dummy
+    region: us-east-1
   s3:
     enabled: false
     bucket-name:
