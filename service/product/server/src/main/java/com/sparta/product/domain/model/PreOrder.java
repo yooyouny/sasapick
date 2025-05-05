@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +29,7 @@ public class PreOrder extends BaseEntity {
   private Long preOrderId;
 
   @Column(nullable = false)
-  private UUID productId;
+  private Long productId;
 
   @Column(nullable = false)
   private String preOrderTitle;
@@ -57,7 +56,7 @@ public class PreOrder extends BaseEntity {
 
   @Builder
   private PreOrder(
-      UUID productId,
+      Long productId,
       String preOrderTitle,
       LocalDateTime startDateTime,
       LocalDateTime endDateTime,
@@ -81,7 +80,7 @@ public class PreOrder extends BaseEntity {
   }
 
   public void update(
-      UUID productId,
+      Long productId,
       String preOrderTitle,
       LocalDateTime startDateTime,
       LocalDateTime endDateTime,

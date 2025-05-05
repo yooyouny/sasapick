@@ -1,58 +1,81 @@
 package com.sparta.product.domain.model;
 
 import com.sparta.common.domain.entity.BaseEntity;
+import com.sparta.product.domain.converter.ProductTagListConverter;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.cassandra.core.mapping.Column;
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.Table;
-import org.springframework.data.domain.Persistable;
+import lombok.NoArgsConstructor;
 
-@Table("P_PRODUCT")
 @Getter
-public class Product extends BaseEntity implements Persistable {
-  @PrimaryKey private UUID productId = UUID.randomUUID();
-  @Column private Long categoryId;
-  @Column private String productName;
-  @Column private String brandName;
-  @Column private String mainColor;
-  @Column private String size;
-  @Column private String description;
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
+@Table(name = "P_PRODUCT")
+public class Product extends BaseEntity {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "product_id")
+  private Long productId;
 
-  @Column private BigDecimal originalPrice;
-  @Column private BigDecimal discountedPrice;
-  @Column private Double discountPercent;
-  @Column private int stock;
+  @Column(nullable = false)
+  private Long categoryId;
 
-  @Column private String originImgUrl;
-  @Column private String thumbnailImgUrl;
-  @Column private String detailImgUrl;
+  @Column(nullable = false, length = 255)
+  private String productName;
 
-  @Column private int limitCountPerUser = 0;
-  @Column private double averageRating = 0.0;
-  @Column private long reviewCount = 0;
-  @Column private long salesCount = 0;
+  @Column(nullable = false, length = 255)
+  private String brandName;
+
+  @Column(length = 50)
+  private String mainColor;
+
+  @Column(length = 50)
+  private String size;
+
+  @Column(columnDefinition = "TEXT")
+  private String description;
+
+  @Column(nullable = false, precision = 10, scale = 2)
+  private BigDecimal originalPrice;
+
+  @Column(precision = 10, scale = 2)
+  private BigDecimal discountedPrice;
+
+  @Column
+  private Double discountPercent;
+
+  @Column(length = 500)
+  private String originImgUrl;
+
+  @Column(length = 500)
+  private String thumbnailImgUrl;
+
+  @Column(length = 500)
+  private String detailImgUrl;
+
+  @Column private Integer limitCountPerUser = 0;
+  @Column private Double averageRating = 0.0;
+  @Column private Integer reviewCount = 0;
+  @Column private Integer salesCount = 0;
 
   @Column private boolean isPublic = true;
   @Column private boolean soldout = false;
   @Column private boolean isDeleted = false;
-  @Column private List<String> tags;
-  @Transient private boolean isNew = false;
+  @Column private boolean isNew = true;
 
-  @Override
-  public Object getId() {
-    return this.productId;
-  }
-
-  @Transient
-  @Override
-  public boolean isNew() {
-    return this.isNew;
-  }
+  @Convert(converter = ProductTagListConverter.class)
+  @Column(length = 255)
+  private List<ProductTag> productTags = new ArrayList<>();
 
   @Builder
   private Product(
@@ -63,13 +86,12 @@ public class Product extends BaseEntity implements Persistable {
       String size,
       BigDecimal originalPrice,
       Double discountPercent,
-      int stock,
       String description,
       String originImgUrl,
       String thumbnailImgUrl,
       String detailImgUrl,
       int limitCountPerUser,
-      List<String> tags) {
+      List<ProductTag> tags) {
     this.categoryId = categoryId;
     this.productName = productName;
     this.brandName = brandName;
@@ -78,13 +100,12 @@ public class Product extends BaseEntity implements Persistable {
     this.originalPrice = originalPrice;
     this.discountPercent = discountPercent;
     applyDiscount(discountPercent);
-    this.stock = stock;
     this.description = description;
     this.originImgUrl = originImgUrl;
     this.thumbnailImgUrl = thumbnailImgUrl;
     this.detailImgUrl = detailImgUrl;
     this.limitCountPerUser = limitCountPerUser;
-    this.tags = tags;
+    setProductTags(tags);
   }
 
   public void updateProduct(
@@ -95,13 +116,12 @@ public class Product extends BaseEntity implements Persistable {
       String size,
       BigDecimal originalPrice,
       Double discountPercent,
-      Integer stock,
       String description,
       String originImgUrl,
       String detailImgUrl,
       String thumbnailImgUrl,
       Integer limitCountPerUser,
-      List<String> tags,
+      List<ProductTag> tags,
       boolean isPublic) {
     this.categoryId = categoryId;
     this.productName = productName;
@@ -111,18 +131,13 @@ public class Product extends BaseEntity implements Persistable {
     this.originalPrice = originalPrice;
     this.discountPercent = discountPercent;
     applyDiscount(discountPercent);
-    this.stock = stock;
     this.description = description;
     this.originImgUrl = originImgUrl;
     this.detailImgUrl = detailImgUrl;
     this.thumbnailImgUrl = thumbnailImgUrl;
-    this.tags = tags;
+    setProductTags(tags);
     this.limitCountPerUser = limitCountPerUser;
     this.isPublic = isPublic;
-  }
-
-  public UUID getProductId() {
-    return productId;
   }
 
   public void setIsNew(boolean isNew) {
@@ -148,11 +163,15 @@ public class Product extends BaseEntity implements Persistable {
     }
   }
 
-  public void updateStock(int reduceCount) {
-    this.stock -= reduceCount;
+  private void setProductTags(List<ProductTag> tags) {
+    this.productTags = tags != null 
+        ? new ArrayList<>(tags)
+        : new ArrayList<>();
   }
 
-  public void rollbackStock(int rollbackCount) {
-    this.stock += rollbackCount;
+  public List<String> getTagNames() {
+    return this.productTags.stream()
+        .map(Enum::name)
+        .toList();
   }
 }

@@ -1,5 +1,6 @@
 package com.sparta.product.presentation.request;
 
+import com.sparta.product.domain.model.ProductTag;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -16,4 +17,4 @@ public record ProductCreateRequest(
     @NotNull(message = "상품재고수량은 필수입니다") Integer stock,
     @NotBlank(message = "상품설명은 필수입니다") String description,
     @NotNull(message = "상품이름은 필수입니다") Integer limitCountPerUser,
-    List<String> tags) {}
+    List<ProductTag> tags) {}

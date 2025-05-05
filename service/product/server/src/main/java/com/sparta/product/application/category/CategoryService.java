@@ -1,7 +1,7 @@
 package com.sparta.product.application.category;
 
 import com.sparta.product.domain.model.Category;
-import com.sparta.product.domain.repository.jpa.CategoryRepository;
+import com.sparta.product.domain.repository.CategoryRepository;
 import com.sparta.product.presentation.exception.ProductErrorCode;
 import com.sparta.product.presentation.exception.ProductServerException;
 import com.sparta.product.presentation.response.CategoryResponse;

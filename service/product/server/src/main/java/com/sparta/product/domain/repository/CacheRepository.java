@@ -1,4 +1,4 @@
-package com.sparta.product.domain.repository.redis;
+package com.sparta.product.domain.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class RedisRepository {
+public class CacheRepository {
   private final RedisTemplate<String, String> redisTemplate;
 
   public Long sAdd(String key, String value) {

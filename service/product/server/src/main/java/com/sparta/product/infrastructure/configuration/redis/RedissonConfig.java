@@ -1,4 +1,4 @@
-package com.sparta.product.infrastructure.configuration;
+package com.sparta.product.infrastructure.configuration.redis;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Configuration;
 public class RedissonConfig {
   private static final String REDIS_URL_PREFIX = "redis://";
 
-  @Value("${spring.data.redis.host}")
+  @Value("${spring.data.preorder-redis.host}")
   private String host;
 
-  @Value("${spring.data.redis.port}")
+  @Value("${spring.data.preorder-redis.port}")
   private int port;
 
   @Bean

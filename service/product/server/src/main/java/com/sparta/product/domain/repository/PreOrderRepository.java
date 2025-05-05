@@ -1,4 +1,4 @@
-package com.sparta.product.domain.repository.jpa;
+package com.sparta.product.domain.repository;
 
 import com.sparta.product.domain.model.PreOrder;
 import java.util.Optional;

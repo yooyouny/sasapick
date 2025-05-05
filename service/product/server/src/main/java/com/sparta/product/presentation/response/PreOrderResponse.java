@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PreOrderResponse {
   Long preOrderId;
-  UUID productId;
+  Long productId;
   String preOrderTitle;
   String state;
   LocalDateTime startDateTime;
@@ -24,7 +24,7 @@ public class PreOrderResponse {
   @Builder
   private PreOrderResponse(
       Long preOrderId,
-      UUID productId,
+      Long productId,
       String preOrderTitle,
       String state,
       LocalDateTime startDateTime,

@@ -79,7 +79,7 @@ public class ProductSearchDto {
 
   public static ProductSearchDto toDto(ProductResponse product) {
     return ProductSearchDto.builder()
-        .productId(product.getProductId())
+        .productId(String.valueOf(product.getProductId()))
         .categoryId(product.getCategoryId())
         .productName(product.getProductName())
         .brandName(product.getBrandName())

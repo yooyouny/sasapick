@@ -4,7 +4,6 @@ import com.sparta.product.domain.model.Product;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class ProductResponse {
-  private String productId;
+  private Long productId;
   private Long categoryId;
   private String brandName;
   private String mainColor;
@@ -21,7 +20,6 @@ public class ProductResponse {
   private BigDecimal originalPrice;
   private BigDecimal discountedPrice;
   private Double discountPercent;
-  private Integer stock;
   private String description;
   private String originImgUrl;
   private String thumbnailImgUrl;
@@ -38,7 +36,7 @@ public class ProductResponse {
 
   @Builder
   private ProductResponse(
-      UUID productId,
+      Long productId,
       Long categoryId,
       String productName,
       String brandName,
@@ -47,7 +45,6 @@ public class ProductResponse {
       BigDecimal originalPrice,
       BigDecimal discountedPrice,
       Double discountPercent,
-      int stock,
       String description,
       String originImgUrl,
       String thumbnailImgUrl,
@@ -61,7 +58,7 @@ public class ProductResponse {
       boolean isDeleted,
       List<String> tags,
       LocalDateTime createdAt) {
-    this.productId = productId.toString();
+    this.productId = productId;
     this.categoryId = categoryId;
     this.productName = productName;
     this.brandName = brandName;
@@ -70,7 +67,6 @@ public class ProductResponse {
     this.originalPrice = originalPrice;
     this.discountedPrice = discountedPrice;
     this.discountPercent = discountPercent;
-    this.stock = stock;
     this.description = description;
     this.originImgUrl = originImgUrl;
     this.thumbnailImgUrl = thumbnailImgUrl;
@@ -101,7 +97,6 @@ public class ProductResponse {
         .originalPrice(product.getOriginalPrice())
         .discountPercent(product.getDiscountPercent())
         .discountedPrice(product.getDiscountedPrice())
-        .stock(product.getStock())
         .limitCountPerUser(product.getLimitCountPerUser())
         .reviewCount(product.getReviewCount())
         .salesCount(product.getSalesCount())
@@ -109,7 +104,7 @@ public class ProductResponse {
         .isDeleted(product.isDeleted())
         .isPublic(product.isPublic())
         .soldout(product.isSoldout())
-        .tags(product.getTags())
+        .tags(product.getTagNames())
         .createdAt(product.getCreatedAt())
         .build();
   }

@@ -2,6 +2,9 @@ package com.sparta.product.application.product;
 
 import com.sparta.product.application.dto.ImgDto;
 import com.sparta.product.domain.model.Product;
+import com.sparta.product.domain.model.StockEventType;
+import com.sparta.product.domain.model.StockHistory;
+import com.sparta.product.infrastructure.utils.StockRedisDto;
 import com.sparta.product.presentation.request.ProductCreateRequest;
 import com.sparta.product.presentation.request.ProductUpdateRequest;
 import com.sparta.product_dto.ProductDto;
@@ -15,8 +18,7 @@ public class ProductMapper {
         .originalPrice(product.getOriginalPrice())
         .discountPercent(product.getDiscountPercent())
         .discountedPrice(product.getDiscountedPrice())
-        .stock(product.getStock())
-        .tags(product.getTags())
+        .tags(product.getTagNames())
         .build();
   }
 
@@ -33,7 +35,6 @@ public class ProductMapper {
         .originImgUrl(imgDto.originImgUrl())
         .detailImgUrl(imgDto.detailImgUrl())
         .thumbnailImgUrl(imgDto.thumbnailImgUrl())
-        .stock(request.stock())
         .limitCountPerUser(request.limitCountPerUser())
         .tags(request.tags())
         .build();
@@ -49,7 +50,6 @@ public class ProductMapper {
         request.size(),
         request.originalPrice(),
         request.discountPercent(),
-        request.stock(),
         request.description(),
         imgUrls.originImgUrl(),
         imgUrls.detailImgUrl(),
@@ -57,5 +57,16 @@ public class ProductMapper {
         request.limitCountPerUser(),
         request.tags(),
         request.isPublic());
+  }
+
+  public static StockHistory toEntity(
+      Long referenceId, StockEventType eventType, StockRedisDto request) {
+    return StockHistory.builder()
+        .productId(request.productId())
+        .quantityChange(request.quantityChange())
+        .currentQuantity(request.currentQuantity())
+        .stockEventType(eventType)
+        .referenceId(referenceId)
+        .build();
   }
 }

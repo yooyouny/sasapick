@@ -1,8 +1,10 @@
 package com.sparta.product.application.product;
 
+import com.sparta.common.domain.entity.KafkaTopicConstant;
 import com.sparta.product.application.category.CategoryService;
 import com.sparta.product.application.dto.ImgDto;
 import com.sparta.product.domain.model.Product;
+import com.sparta.product.infrastructure.messaging.StockProducer;
 import com.sparta.product.presentation.exception.ProductErrorCode;
 import com.sparta.product.presentation.exception.ProductServerException;
 import com.sparta.product.presentation.request.ProductCreateRequest;
@@ -10,7 +12,6 @@ import com.sparta.product.presentation.request.ProductUpdateRequest;
 import com.sparta.product.presentation.response.ProductResponse;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProductFacadeService {
   private final ProductService productService;
   private final CategoryService categoryService;
+  private final StockProducer stockProducer;
   private final ElasticsearchService elasticSearchService;
-  private final S3ImageService imageService;
+  private final ImageService imageService;
 
   @Transactional
-  public String createProduct(
+  public Long createProduct(
       ProductCreateRequest request, MultipartFile productImg, MultipartFile detailImg)
       throws IOException {
     validateCategoryId(request.categoryId());
@@ -37,6 +39,7 @@ public class ProductFacadeService {
     ProductResponse product =
         productService.createProduct(
             request, new ImgDto(productImgUrl, detailImgUrl, thumbnailImgUrl));
+    stockProducer.save(KafkaTopicConstant.STOCK_SAVED, product.getProductId(), request.stock());
     elasticSearchService.saveProduct(product);
     return product.getProductId();
   }
@@ -54,15 +57,16 @@ public class ProductFacadeService {
   }
 
   @Transactional
-  public ProductResponse updateStatus(UUID productId, boolean status) {
+  public ProductResponse updateStatus(Long productId, boolean status) {
     ProductResponse product = productService.updateStatus(productId, status);
     elasticSearchService.updateProduct(product);
     return product;
   }
 
   @Transactional
-  public boolean deleteProduct(UUID productId) {
+  public boolean deleteProduct(Long productId) {
     ProductResponse product = productService.deleteProduct(productId);
+    stockProducer.delete(KafkaTopicConstant.STOCK_DELETED, productId);
     elasticSearchService.deleteProduct(product);
     Optional.ofNullable(product.getOriginImgUrl()).ifPresent(imageService::deleteImage);
     Optional.ofNullable(product.getDetailImgUrl()).ifPresent(imageService::deleteImage);

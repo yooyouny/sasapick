@@ -200,9 +200,9 @@ public class OrderCreateService {
         .filter(orderProductInfo -> orderProductInfo.getUserCouponId() != null)
         .map(OrderProductInfo::getProductId).toList();
 
-    Map<String, List<String>> productTags = products.stream()
+    Map<Long, String> productTags = products.stream()
         .collect(Collectors.toMap(
-            product -> product.getProductId().toString(), ProductDto::getTags
+            ProductDto::getProductId, ProductDto::getTagNames
         ));
 
     usedCouponProductIds.forEach(usedCouponProductId -> {
