@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: bff
+  
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
