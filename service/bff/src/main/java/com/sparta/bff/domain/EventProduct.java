@@ -10,11 +10,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "P_EVENT_PRODUCT")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class EventProduct {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
