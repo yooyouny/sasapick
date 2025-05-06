@@ -51,6 +51,11 @@ spring:
           predicates:
             - Path=/api/orders/**, /api/carts/**
 
+        - id: main
+          uri: lb://main
+          predicates:
+            - Path=/main/**, /home/**
+
       discovery:
         locator:
           enabled: true
